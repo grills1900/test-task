@@ -1,4 +1,3 @@
-from time import sleep
 from selenium import webdriver
 from selenium.webdriver.support.expected_conditions import element_to_be_clickable
 from webdriver_manager.chrome import ChromeDriverManager
