@@ -1,0 +1,49 @@
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.support.expected_conditions import element_to_be_clickable
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+chrome_options = Options()
+chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+chrome_options.add_argument(
+    "--user-agent=Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
+
+chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.page_load_strategy = "eager"
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=chrome_options)
+wait = WebDriverWait(driver, 10, poll_frequency=1)
+
+driver.get("https://only.digital/en")
+
+# Проверка на главной странице
+footer = driver.find_element(By.XPATH, "//div[@class='Footer_grid__lfZ34']")
+wait.until(EC.visibility_of(footer), message="Футер отсутствует")
+print("Футер присутствует")
+
+footer_email = driver.find_element(By.XPATH, "(//a[text()='hello@only.digital'])[3]")
+wait.until(EC.element_to_be_clickable(footer), message="E-mail в футере отсутствует")
+assert footer_email.get_attribute("href") == "mailto:hello@only.digital", 'Почта неверная'
+print("E-mail в футере присутствует")
+
+# Переходим на вкладку "About_us"
+button_about_us = driver.find_element(By.XPATH, "(//a[text()='About us'])[1]")
+wait.until(element_to_be_clickable(button_about_us)).click()
+
+wait.until(EC.visibility_of(footer), message="Футер отсутствует")
+print("Футер на вкладке 'About_us' присутствует")
+
+footer_phone = driver.find_element(By.XPATH, "(//a[contains(@href, 'tel')])[3]")
+wait.until(EC.element_to_be_clickable(footer), message="Номер телефона в футере отсутствует")
+assert footer_phone.get_attribute("href") == "tel:+7 (495) 740 99 79", 'Номер телефона неверный'
+print("Номер телефона в футере на вкладке 'About_us' присутствует")
+
+
+
+
+
